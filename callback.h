@@ -2,6 +2,6 @@
 #define CALLBACK_H
 #include "reader.h"
 
-void resetInputBuffer(InputBuffer*);
+void freeInputBuffer(InputBuffer*);
 
 #endif

@@ -5,5 +5,5 @@ typedef struct {
     size_t size;
     char buffer[];
 } InputBuffer;
-InputBuffer * reader(InputBuffer*);
+InputBuffer * reader();
 #endif

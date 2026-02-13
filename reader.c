@@ -3,8 +3,10 @@
 #include "reader.h"
 #include <stdlib.h>
 
-InputBuffer* reader(InputBuffer* inputPtr) {
+InputBuffer* reader() {
     int n = 0;
+    InputBuffer * inputPtr = (InputBuffer *)malloc(sizeof(InputBuffer));
+    inputPtr->size = 0;
     char bufferChunk[100];
     while((n = read(0,bufferChunk,100)) > 0) {
         size_t inputBufferSize = inputPtr->size;
@@ -13,6 +15,7 @@ InputBuffer* reader(InputBuffer* inputPtr) {
 
         if (tem_ptr == NULL) {
             printf("realloc faild");
+            free(inputPtr); 
             exit(0);
         }
 

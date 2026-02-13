@@ -5,23 +5,41 @@
 #include <unistd.h>
 #include <string.h>
 #include "callback.h"
+#include "commandHandler.h"
+#include "executer.h"
 
 int main(int argc, char* argv[]) {
     initial_prompt();
     while (true) {
         print_prompt(TakeInput);
-        InputBuffer *ptr = (InputBuffer *)malloc(sizeof(InputBuffer));
-        ptr->size = 0;
-        ptr = reader(ptr);
-        if (strcmp(ptr->buffer, ".exit\n") == 0) {
-            resetInputBuffer(ptr);
-            exit(EXIT_SUCCESS);
-        } else {
-            write(1,"\n",1);
-            write(1,ptr->buffer,ptr->size);
-            write(1,"\n",1);    
+        InputBuffer *ptr = reader();
+       
+       if (ptr->buffer[0] == '.') {
+            switch (do_meta_command(ptr)) {
+                case (META_COMMAND_SUCCESS):
+                    freeInputBuffer(ptr);
+                    continue;
+                case (META_COMMAND_UNRECOGNIZED_COMMAND):
+                    printf("Unrecognized command '%s'\n",ptr->buffer);
+                    freeInputBuffer(ptr);
+                    continue;
+            }
+       }
+
+        Statement statement;
+
+        switch (prepare_statement(ptr, &statement)) {
+            case (PREPARE_SUCCESS):
+                break;
+            case (PREPARE_UNRECOGNIZED_STATEMENT):
+                printf("prepare unrecognized statement '%s'\n",ptr->buffer);
+                freeInputBuffer(ptr);
+                continue;
         }
-        resetInputBuffer(ptr);
+
+        execute_statement(&statement);
+        printf("Executed.\n");
+        freeInputBuffer(ptr);
     }
     return 0;
 };
